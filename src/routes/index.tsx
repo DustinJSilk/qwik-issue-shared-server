@@ -1,25 +1,33 @@
-import { component$ } from '@builder.io/qwik';
-import type { DocumentHead } from '@builder.io/qwik-city';
+import { component$ } from "@builder.io/qwik";
+import { routeLoader$, server$ } from "@builder.io/qwik-city";
+
+export async function getData() {
+  // This function remains in the compiled index.tsx file loaded in the browser
+  return "Some data";
+}
+
+export const useData = routeLoader$(() => {
+  return getData();
+});
+
+export const nextPage = server$(() => {
+  return getData();
+});
 
 export default component$(() => {
+  const data = useData();
+
   return (
     <>
-      <h1>Hi 👋</h1>
-      <p>
-        Can't wait to see what you build with qwik!
-        <br />
-        Happy coding.
-      </p>
+      {data.value}
+
+      <button
+        onClick$={() => {
+          nextPage().then((data) => console.log(data));
+        }}
+      >
+        Click me
+      </button>
     </>
   );
 });
-
-export const head: DocumentHead = {
-  title: 'Welcome to Qwik',
-  meta: [
-    {
-      name: 'description',
-      content: 'Qwik site description',
-    },
-  ],
-};
